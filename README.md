@@ -30,7 +30,7 @@ Still Ongoing...
 - [minBPE Repository](https://github.com/karpathy/minBPE)
 ## Acknowledgments
 
-Thank you Andrej Karpathy for creating and sharing the **"Neural Networks: Zero to Hero"** tutorial lecture series on Youtube & [Github](https://github.com/karpathy/nn-zero-to-hero/tree/master). Your dedication and expertise has made this resource possible. Find more of Andrej's work on his [GitHub](https://github.com/karpathy), [Twitter](https://x.com/karpathy), [Website](https://karpathy.ai) and [AI native school, Eureka Labs](https://github.com/EurekaLabsAI).
+Thank you Andrej Karpathy for creating and sharing the **"Neural Networks: Zero to Hero"** tutorial lecture series on [Youtube](https://www.youtube.com/playlist?list=PLAqhIrjkxbuWI23v9cThsA9GvCAUhRvKZ) & [Github](https://github.com/karpathy/nn-zero-to-hero/tree/master). Your dedication and expertise has made this resource possible. Find more of Andrej's work on his [GitHub](https://github.com/karpathy), [Twitter](https://x.com/karpathy), [Website](https://karpathy.ai) and [AI native school, Eureka Labs](https://github.com/EurekaLabsAI).
 
 ## License
 
