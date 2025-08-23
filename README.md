@@ -17,7 +17,7 @@ This repository contains my detailed implementations of Andrej Karpathy's [Neura
 | Makemore 5 | [Wavenet](006_makemore_WaveNet/makemore_WaveNet.ipynb) | [Wavenet Exercises](006_makemore_WaveNet/WaveNet_Exercises.ipynb)
 | GPT | [GPT](007_GPT/gpt.ipynb) | [1, 2a](007_GPT/ex1-2a.ipynb), [2b](007_GPT/ex2b.ipynb), [3](007_GPT/ex3.ipynb)
 | minBPE | [minBPE](008_minBPE/minbpe.ipynb) | [minBPE Exercises](008_minBPE/minbpe-exercises.ipynb)
-| GPT-2 | [GPT-2](009_GPT-2/gpt-2-from-scratch.ipynb) | ---
+| GPT-2 | [GPT-2](009_GPT2/gpt-2-from-scratch.ipynb) | ---
 
 Still Ongoing... 
 
