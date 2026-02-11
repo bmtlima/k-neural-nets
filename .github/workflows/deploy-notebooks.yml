@@ -55,7 +55,10 @@ jobs:
               cp -r "$dir/_src" "public/$dir/"
             fi
           done
-          
+
+          # This finds all HTML files in subdirectories and injects the header script
+          find public -name "*.html" -exec sed -i 's|<body>|<body><script src="https://chizkidd.github.io/header-loader.js"></script>|' {} +
+
           # Debug: show what was created
           echo "=== Directory structure in public/ ==="
           find public -type f | head -20
@@ -213,6 +216,7 @@ jobs:
               </style>
           </head>
           <body>
+              <script src="https://chizkidd.github.io/header-loader.js"></script>
               <header class="site-header">
                   <div class="wrap">
                       <a class="site-title" href="https://github.com/chizkidd/Karpathy-Neural-Networks-Zero-to-Hero">Neural Networks: Zero to Hero</a>
