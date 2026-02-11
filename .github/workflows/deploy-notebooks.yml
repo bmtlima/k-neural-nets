@@ -29,24 +29,16 @@ jobs:
         run: |
           mkdir -p public
           
-          # Convert notebooks while preserving directory structure
+          # Convert all notebooks from numbered directories (001_, 002_, etc.)
           for n in [0-9][0-9][0-9]_*/*.ipynb; do
             [ -e "$n" ] || continue
-            
-            # Get the directory name (e.g., "001_micrograd")
-            dir=$(dirname "$n")
-            
-            # Create the corresponding directory in public/
-            mkdir -p "public/$dir"
-            
-            # Convert notebook to HTML in the same directory structure
-            echo "Converting $n to public/$dir/"
-            jupyter nbconvert --to html --template lab --output-dir="public/$dir" "$n" || echo "Failed to convert $n"
+            echo "Converting $n"
+            jupyter nbconvert --to html --template lab --output-dir='public' "$n" || echo "Failed to convert $n"
           done
           
-          # Debug: show what was created
-          echo "=== Directory structure in public/ ==="
-          find public -type f -name "*.html"
+          # List what was converted for debugging
+          echo "Files in public directory:"
+          ls -la public/
 
           # Generate the index.html landing page
           cat > public/index.html << 'HTMLEOF'
@@ -238,16 +230,14 @@ jobs:
                   
           HTMLEOF
           
-          # Add notebook links with full paths (preserving directory structure)
+          # Add notebook links with categorization
           echo "        const notebooks = [" >> public/index.html
           for n in [0-9][0-9][0-9]_*/*.ipynb; do
             [ -e "$n" ] || continue
-            dir=$(dirname "$n")
             file=$(basename "$n" .ipynb).html
             name=$(basename "$n" .ipynb)
-            # Full path includes directory
-            fullpath="$dir/$file"
-            echo "            {file: '$fullpath', name: '$name', folder: '$dir'}," >> public/index.html
+            folder=$(dirname "$n")
+            echo "            {file: '$file', name: '$name', folder: '$folder'}," >> public/index.html
           done
           echo "        ];" >> public/index.html
           
@@ -262,11 +252,12 @@ jobs:
           notebooks.forEach(nb => {
               const li = document.createElement('li');
               const a = document.createElement('a');
-              a.href = nb.file;  // Now includes full path like "001_micrograd/micrograd.html"
+              a.href = nb.file;
               a.textContent = nb.name.replace(/_/g, ' ');
               li.appendChild(a);
               
               // Categorize: exercises vs lectures
+              // Check if filename contains 'exercise' OR starts with 'ex'
               const isExercise = nb.name.toLowerCase().includes('exercise') || 
                                 nb.name.toLowerCase().startsWith('ex');
               
