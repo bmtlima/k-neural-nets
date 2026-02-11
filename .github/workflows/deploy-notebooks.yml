@@ -29,11 +29,16 @@ jobs:
         run: |
           mkdir -p public
           
-          # Convert all notebooks from numbered directories
-          for n in 00*/*.ipynb; do
+          # Convert all notebooks from numbered directories (001_, 002_, etc.)
+          for n in [0-9][0-9][0-9]_*/*.ipynb; do
             [ -e "$n" ] || continue
+            echo "Converting $n"
             jupyter nbconvert --to html --template lab --output-dir='public' "$n" || echo "Failed to convert $n"
           done
+          
+          # List what was converted for debugging
+          echo "Files in public directory:"
+          ls -la public/
 
           # Generate the index.html landing page
           cat > public/index.html << 'HTMLEOF'
@@ -42,7 +47,7 @@ jobs:
           <head>
               <meta charset="UTF-8">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Karpathy: Neural Networks: Zero to Hero - Notebooks</title>
+              <title>Neural Networks: Zero to Hero</title>
               <style>
                   * {
                       margin: 0;
@@ -190,12 +195,13 @@ jobs:
           <body>
               <header class="site-header">
                   <div class="wrap">
-                      <a class="site-title" href="https://github.com/chizkidd/Karpathy-Neural-Networks-Zero-to-Hero">Neural Networks: Zero to Hero Notebooks</a>
+                      <a class="site-title" href="https://github.com/chizkidd/Karpathy-Neural-Networks-Zero-to-Hero">Neural Networks: Zero to Hero</a>
                   </div>
               </header>
 
               <div class="page-content">
                   <div class="wrap">
+                      <h1 class="header-matched-heading">Andrej Karpathy's Neural Networks Course</h1>
                       
                       <div class="section">
                           <h2 class="section-heading">Lectures</h2>
@@ -224,9 +230,9 @@ jobs:
                   
           HTMLEOF
           
-          # Add notebook links
+          # Add notebook links with categorization
           echo "        const notebooks = [" >> public/index.html
-          for n in 00*/*.ipynb; do
+          for n in [0-9][0-9][0-9]_*/*.ipynb; do
             [ -e "$n" ] || continue
             file=$(basename "$n" .ipynb).html
             name=$(basename "$n" .ipynb)
@@ -251,7 +257,11 @@ jobs:
               li.appendChild(a);
               
               // Categorize: exercises vs lectures
-              if (nb.name.toLowerCase().includes('exercise')) {
+              // Check if filename contains 'exercise' OR starts with 'ex'
+              const isExercise = nb.name.toLowerCase().includes('exercise') || 
+                                nb.name.toLowerCase().startsWith('ex');
+              
+              if (isExercise) {
                   exercisesList.appendChild(li);
               } else {
                   lecturesList.appendChild(li);
