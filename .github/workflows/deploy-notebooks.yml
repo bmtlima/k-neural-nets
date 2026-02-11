@@ -25,15 +25,6 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Inject Shared Header
-        run: |
-          # 1. Clean up the duplicate header template in notebooks
-          find public -name "*.html" -exec sed -i '/<header class="site-header">/,/<\/header>/d' {} +
-
-          # 2. Inject the blog header script into every page
-          find public -name "*.html" -exec sed -i 's|<body>|<body><script src="https://chizkidd.github.io/header-loader.js"></script>|' {} +
-
-
       - name: Convert Notebooks to HTML
         run: |
           mkdir -p public
@@ -64,6 +55,12 @@ jobs:
               cp -r "$dir/_src" "public/$dir/"
             fi
           done
+
+          # 1. Clean up (delete) the duplicate header template in notebooks
+          find public -name "*.html" -exec sed -i '/<header class="site-header">/,/<\/header>/d' {} +
+
+          # 2. Inject the shared blog header script into every page
+          find public -name "*.html" -exec sed -i 's|<body>|<body><script src="https://chizkidd.github.io/header-loader.js"></script>|' {} +
           
           # Debug: show what was created
           echo "=== Directory structure in public/ ==="
