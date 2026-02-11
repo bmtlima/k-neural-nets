@@ -29,20 +29,17 @@ jobs:
         run: |
           mkdir -p public
           
-          # Convert notebooks while preserving the folder hierarchy
+          # Convert all notebooks from numbered directories (001_, 002_, etc.)
           for n in [0-9][0-9][0-9]_*/*.ipynb; do
             [ -e "$n" ] || continue
-            folder=$(dirname "$n")
-            mkdir -p "public/$folder"
-            
-            # Copy associated images for this folder if they exist
-            if [ -d "${folder}/_imgs" ]; then cp -r "${folder}/_imgs" "public/${folder}/"; fi
-            if [ -d "${folder}/imgs" ]; then cp -r "${folder}/imgs" "public/${folder}/"; fi
-
             echo "Converting $n"
-            jupyter nbconvert --to html --template lab --output-dir="public/$folder" "$n"
+            jupyter nbconvert --to html --template lab --output-dir='public' "$n" || echo "Failed to convert $n"
           done
           
+          # List what was converted for debugging
+          echo "Files in public directory:"
+          ls -la public/
+
           # Generate the index.html landing page
           cat > public/index.html << 'HTMLEOF'
           <!DOCTYPE html>
@@ -233,15 +230,14 @@ jobs:
                   
           HTMLEOF
           
-          # Add notebook links with correct relative folder paths
+          # Add notebook links with categorization
           echo "        const notebooks = [" >> public/index.html
           for n in [0-9][0-9][0-9]_*/*.ipynb; do
             [ -e "$n" ] || continue
-            folder=$(dirname "$n")
             file=$(basename "$n" .ipynb).html
             name=$(basename "$n" .ipynb)
-            # Link points to the subfolder/file.html
-            echo "            {file: '$folder/$file', name: '$name', folder: '$folder'}," >> public/index.html
+            folder=$(dirname "$n")
+            echo "            {file: '$file', name: '$name', folder: '$folder'}," >> public/index.html
           done
           echo "        ];" >> public/index.html
           
@@ -260,6 +256,8 @@ jobs:
               a.textContent = nb.name.replace(/_/g, ' ');
               li.appendChild(a);
               
+              // Categorize: exercises vs lectures
+              // Check if filename contains 'exercise' OR starts with 'ex'
               const isExercise = nb.name.toLowerCase().includes('exercise') || 
                                 nb.name.toLowerCase().startsWith('ex');
               
