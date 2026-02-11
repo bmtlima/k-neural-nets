@@ -1,0 +1,272 @@
+name: Deploy Notebooks to GH Pages
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Convert Notebooks to HTML
+        run: |
+          mkdir -p public
+          
+          # Convert all notebooks from numbered directories
+          for n in 00*/*.ipynb; do
+            [ -e "$n" ] || continue
+            jupyter nbconvert --to html --template lab --output-dir='public' "$n" || echo "Failed to convert $n"
+          done
+
+          # Generate the index.html landing page
+          cat > public/index.html << 'HTMLEOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Karpathy: Neural Networks: Zero to Hero - Notebooks</title>
+              <style>
+                  * {
+                      margin: 0;
+                      padding: 0;
+                  }
+                  
+                  html, body {
+                      height: 100%;
+                  }
+                  
+                  body {
+                      font-family: Helvetica, Arial, sans-serif;
+                      font-size: 16px;
+                      line-height: 1.5;
+                      font-weight: 300;
+                      background-color: #fdfdfd;
+                      display: grid;
+                      grid-template-rows: auto 1fr auto;
+                      min-height: 100vh;
+                  }
+                  
+                  h1, h2, h3, h4, h5, h6 {
+                      font-size: 100%;
+                      font-weight: 400;
+                  }
+                  
+                  a {
+                      color: #2a7ae2;
+                      text-decoration: none;
+                  }
+                  
+                  a:hover {
+                      color: #000;
+                      text-decoration: underline;
+                  }
+                  
+                  a:visited {
+                      color: #205caa;
+                  }
+                  
+                  .wrap {
+                      max-width: 800px;
+                      padding: 0 30px;
+                      margin: 0 auto;
+                  }
+                  
+                  /* Site header */
+                  .site-header {
+                      border-top: 5px solid #333;
+                      border-bottom: 1px solid #e8e8e8;
+                      min-height: 56px;
+                      background-color: white;
+                  }
+                  
+                  .site-title {
+                      display: block;
+                      color: #333;
+                      font-size: 26px;
+                      letter-spacing: -1px;
+                      float: left;
+                      line-height: 56px;
+                      position: relative;
+                      z-index: 1;
+                  }
+                  
+                  .site-title:hover,
+                  .site-title:visited {
+                      color: #333;
+                  }
+                  
+                  /* Page content */
+                  .page-content {
+                      padding: 30px 0;
+                      background-color: #fff;
+                  }
+                  
+                  .header-matched-heading {
+                      color: #333;
+                      font-size: 26px;
+                      letter-spacing: -1px;
+                      font-weight: 400;
+                      text-align: left;
+                      line-height: 1.2;
+                      margin-top: 20px;
+                      margin-bottom: 20px;
+                  }
+                  
+                  .section-heading {
+                      color: #333;
+                      font-size: 26px;
+                      letter-spacing: -1px;
+                      font-weight: 400;
+                      text-align: left;
+                      line-height: 1.2;
+                      margin-bottom: 40px;
+                      border-bottom: 1px solid #ddd;
+                      padding-bottom: 0.5px;
+                  }
+                  
+                  .home-nav-list {
+                      padding-left: 20px;
+                      margin-bottom: 30px;
+                      list-style-type: disc;
+                  }
+                  
+                  .home-nav-list li {
+                      margin-bottom: 5.5px;
+                  }
+                  
+                  .home-nav-list a {
+                      font-size: 1.0em;
+                      font-weight: 300;
+                      color: #2a7ae2;
+                  }
+                  
+                  .home-nav-list a:hover {
+                      color: #000;
+                      text-decoration: underline;
+                  }
+                  
+                  /* Site footer */
+                  .site-footer {
+                      border-top: 1px solid #e8e8e8;
+                      padding: 30px 0;
+                  }
+                  
+                  .site-footer p {
+                      font-size: 15px;
+                      letter-spacing: -.3px;
+                      color: #828282;
+                      text-align: center;
+                  }
+                  
+                  .site-footer a {
+                      color: #2a7ae2;
+                  }
+                  
+                  @media screen and (max-width: 600px) {
+                      .wrap {
+                          padding: 0 12px;
+                      }
+                  }
+              </style>
+          </head>
+          <body>
+              <header class="site-header">
+                  <div class="wrap">
+                      <a class="site-title" href="https://github.com/chizkidd/Karpathy-Neural-Networks-Zero-to-Hero">Neural Networks: Zero to Hero Notebooks</a>
+                  </div>
+              </header>
+
+              <div class="page-content">
+                  <div class="wrap">
+                      
+                      <div class="section">
+                          <h2 class="section-heading">Lectures</h2>
+                          <ul class="home-nav-list" id="lectures-notebooks"></ul>
+                      </div>
+
+                      <div class="section">
+                          <h2 class="section-heading">Exercises</h2>
+                          <ul class="home-nav-list" id="exercises-notebooks"></ul>
+                      </div>
+                  </div>
+              </div>
+
+              <footer class="site-footer">
+                  <div class="wrap">
+                      <p>
+                          Course by <a href="https://karpathy.ai/" target="_blank">Andrej Karpathy</a>
+                          • <a href="https://github.com/chizkidd/Karpathy-Neural-Networks-Zero-to-Hero" target="_blank">View Repository</a>
+                      </p>
+                  </div>
+              </footer>
+
+              <script>
+                  const lecturesList = document.getElementById('lectures-notebooks');
+                  const exercisesList = document.getElementById('exercises-notebooks');
+                  
+          HTMLEOF
+          
+          # Add notebook links
+          echo "        const notebooks = [" >> public/index.html
+          for n in 00*/*.ipynb; do
+            [ -e "$n" ] || continue
+            file=$(basename "$n" .ipynb).html
+            name=$(basename "$n" .ipynb)
+            folder=$(dirname "$n")
+            echo "            {file: '$file', name: '$name', folder: '$folder'}," >> public/index.html
+          done
+          echo "        ];" >> public/index.html
+          
+          cat >> public/index.html << 'JSEOF'
+          
+          // Sort notebooks by folder, then by name
+          notebooks.sort((a, b) => {
+              if (a.folder !== b.folder) return a.folder.localeCompare(b.folder);
+              return a.name.localeCompare(b.name);
+          });
+          
+          notebooks.forEach(nb => {
+              const li = document.createElement('li');
+              const a = document.createElement('a');
+              a.href = nb.file;
+              a.textContent = nb.name.replace(/_/g, ' ');
+              li.appendChild(a);
+              
+              // Categorize: exercises vs lectures
+              if (nb.name.toLowerCase().includes('exercise')) {
+                  exercisesList.appendChild(li);
+              } else {
+                  lecturesList.appendChild(li);
+              }
+          });
+              </script>
+          </body>
+          </html>
+          JSEOF
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'public'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
