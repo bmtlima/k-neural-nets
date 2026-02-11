@@ -223,10 +223,6 @@ jobs:
           </head>
           <body>
               <script src="https://chizkidd.github.io/header-loader.js"></script>
-              
-              <div class="page-content">
-                  <div class="wrap">
-                      <h1 class="header-matched-heading">fast.ai Deep Learning Course Notebooks</h1>
 
               <div class="page-content">
                   <div class="wrap">
