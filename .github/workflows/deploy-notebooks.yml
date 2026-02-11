@@ -25,6 +25,15 @@ jobs:
         run: |
           pip install -r requirements.txt
 
+      - name: Inject Shared Header
+        run: |
+          # 1. Clean up the duplicate header template in notebooks
+          find public -name "*.html" -exec sed -i '/<header class="site-header">/,/<\/header>/d' {} +
+
+          # 2. Inject the blog header script into every page
+          find public -name "*.html" -exec sed -i 's|<body>|<body><script src="https://chizkidd.github.io/header-loader.js"></script>|' {} +
+
+
       - name: Convert Notebooks to HTML
         run: |
           mkdir -p public
@@ -55,10 +64,7 @@ jobs:
               cp -r "$dir/_src" "public/$dir/"
             fi
           done
-
-          # This finds all HTML files in subdirectories and injects the header script
-          find public -name "*.html" -exec sed -i 's|<body>|<body><script src="https://chizkidd.github.io/header-loader.js"></script>|' {} +
-
+          
           # Debug: show what was created
           echo "=== Directory structure in public/ ==="
           find public -type f | head -20
@@ -217,11 +223,10 @@ jobs:
           </head>
           <body>
               <script src="https://chizkidd.github.io/header-loader.js"></script>
-              <header class="site-header">
+              
+              <div class="page-content">
                   <div class="wrap">
-                      <a class="site-title" href="https://github.com/chizkidd/Karpathy-Neural-Networks-Zero-to-Hero">Neural Networks: Zero to Hero</a>
-                  </div>
-              </header>
+                      <h1 class="header-matched-heading">fast.ai Deep Learning Course Notebooks</h1>
 
               <div class="page-content">
                   <div class="wrap">
