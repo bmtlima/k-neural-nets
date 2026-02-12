@@ -174,6 +174,28 @@ jobs:
                       padding-bottom: 0.5px;
                   }
                   
+                  .header-matched-heading {
+                      color: #333;
+                      font-size: 32px; /* Increased for better impact */
+                      letter-spacing: -1.2px; /* Slightly tighter for larger text */
+                      font-weight: 400;
+                      text-align: left;
+                      line-height: 1.1;
+                      margin-top: 30px;
+                      margin-bottom: 25px;
+                  }
+
+                  .section-heading {
+                      font-size: 20px; /* Scaled slightly to match the 32px H1 */
+                      font-weight: 500;
+                      color: #555;
+                      border-bottom: 1px solid #f0f0f0;
+                      padding-bottom: 5px;
+                      margin-top: 40px;
+                      margin-bottom: 15px;
+                  }
+
+                  
                   .home-nav-list {
                       padding-left: 20px;
                       margin-bottom: 30px;
