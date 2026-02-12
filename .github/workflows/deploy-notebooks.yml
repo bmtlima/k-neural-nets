@@ -64,8 +64,11 @@ jobs:
           echo "=== Directory structure in public/ ==="
           find public -type f | head -20
 
+          # Get current date in a clean format
+          LAST_UPDATED=$(date +"%B %d, %Y")
+
           # Generate the index.html landing page
-          cat > public/index.html << 'HTMLEOF'
+          cat > public/index.html << HTMLEOF
           <!DOCTYPE html>
           <html>
           <head>
@@ -241,6 +244,7 @@ jobs:
                           Course by <a href="https://karpathy.ai/" target="_blank">Andrej Karpathy</a>
                           • <a href="https://github.com/chizkidd/Karpathy-Neural-Networks-Zero-to-Hero" target="_blank">View Repository</a>
                       </p>
+                      <p class="last-updated">Site last updated: $LAST_UPDATED</p>
                   </div>
               </footer>
 
